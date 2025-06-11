@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>Admin Login - Dev Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Header/Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand Section -->
+                <div class="flex items-center space-x-3">
+                    <img src="/dev.jpeg" alt="Dev Community Logo" class="h-8 w-8 md:h-10 md:w-10 object-contain">
+                    <div class="flex flex-col">
+                        <span class="text-sm md:text-lg font-bold text-gray-800">Dev Community</span>
+                        <span class="text-xs md:text-sm font-medium text-gray-600">Admin Portal</span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/login" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        User Login
+                    </a>
+                    <a href="/register" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Register
+                    </a>
+                    <a href="/admin/login" class="text-blue-600 hover:text-blue-800 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Admin Login
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600 p-2">
+                        <div class="w-6 h-6 flex flex-col justify-center items-center">
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/login" class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    User Login
+                </a>
+                <a href="/register" class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Register
+                </a>
+                <a href="/admin/login" class="block text-blue-600 hover:text-blue-800 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Admin Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <img src="/dev.jpeg" alt="CIT Dev Community Logo" class="h-12 w-12 mx-auto mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Admin Access</h2>
+                <p class="text-gray-600 mt-2">Sign in to Dev Community Admin Panel</p>
+            </div>
+            
+            <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+            
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" name="username" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
+                    Admin Login
+                </button>
+                <div class="text-center">
+                    <a href="/login" class="text-sm text-blue-500 hover:text-blue-700">Back to User Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+
+                // Close mobile menu when navigation links are clicked
+                const mobileNavLinks = mobileMenu.querySelectorAll('a');
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+
+        function showStatus(message, isError = false) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = isError 
+                ? 'block mb-6 p-4 bg-red-100 text-red-700 rounded-lg'
+                : 'block mb-6 p-4 bg-green-100 text-green-700 rounded-lg';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusEl.className = 'hidden mb-6 p-4 rounded-lg';
+            }, 5000);
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+            
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('admin', JSON.stringify(result.admin));
+                    showStatus('Login successful! Redirecting...', false);
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard';
+                    }, 1000);
+                } else {
+                    showStatus(result.error || 'Login failed', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('An error occurred. Please try again later.', true);
+            }
+        });
+    </script>
+</body>
+</html>

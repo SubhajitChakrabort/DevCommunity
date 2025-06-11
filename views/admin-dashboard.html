@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>Admin Dashboard - Dev Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand Section -->
+                <div class="flex items-center space-x-3">
+                    <img src="/dev.jpeg" alt=" Dev Community Logo"
+                        class="h-8 w-8 md:h-10 md:w-10 object-contain">
+                    <div class="flex flex-col">
+                        <span class="text-sm md:text-lg font-bold text-white"> Dev Community</span>
+                        <span class="text-xs md:text-sm font-medium text-gray-300">Admin Dashboard</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/admin/dashboard"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Dashboard
+                    </a>
+                    <a href="/admin/users"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Users
+                    </a>
+                    <a href="/admin/posts"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Posts
+                    </a>
+                    <button id="logoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                        onclick="localStorage.clear(); window.location.href='/login'">
+                        Logout
+                    </button>
+
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn"
+                        class="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 p-2">
+                        <div class="w-6 h-6 flex flex-col justify-center items-center">
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-gray-800 border-t border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/admin/dashboard"
+                    class="block text-white hover:text-gray-300 hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Dashboard
+                </a>
+                <a href="/admin/users"
+                    class="block text-white hover:text-gray-300 hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Users
+                </a>
+                <a href="/admin/posts"
+                    class="block text-white hover:text-gray-300 hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Posts
+                </a>
+                <button id="logoutBtnMobile"
+                    class="block w-full text-left bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Status message -->
+        <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700">Total Users</h3>
+                <p id="totalUsers" class="text-3xl font-bold text-blue-600">0</p>
+            </div>
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700">Active Users</h3>
+                <p id="activeUsers" class="text-3xl font-bold text-green-600">0</p>
+            </div>
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700">Blocked Users</h3>
+                <p id="blockedUsers" class="text-3xl font-bold text-red-600">0</p>
+            </div>
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-700">Total Posts</h3>
+                <p id="totalPosts" class="text-3xl font-bold text-purple-600">0</p>
+            </div>
+        </div>
+
+        <!-- User Search -->
+        <div class="mb-6">
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <input type="text" id="searchInput" placeholder="Search users by name or email..."
+                    class="flex-grow p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button onclick="searchUsers()"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                    Search
+                </button>
+                <button onclick="fetchUsers()"
+                    class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <h2 class="text-2xl font-semibold mb-4">User Management</h2>
+        <div id="usersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Users will be dynamically added here -->
+            <div class="bg-white shadow rounded-lg p-4">
+                <div class="animate-pulse flex flex-col">
+                    <div class="rounded-full bg-gray-200 h-16 w-16 mb-2 mx-auto"></div>
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-1 mx-auto"></div>
+                    <div class="h-3 bg-gray-200 rounded w-1/2 mb-3 mx-auto"></div>
+                    <div class="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                    <div class="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                    <div class="h-3 bg-gray-200 rounded w-full mb-3"></div>
+                    <div class="h-8 bg-gray-200 rounded w-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-6 flex justify-center">
+            <div class="flex flex-wrap space-x-2" id="pagination">
+                <!-- Pagination will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- User Details Modal -->
+        <div id="userDetailsModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">User Details</h3>
+                    <button onclick="closeUserDetailsModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="userDetailsContent" class="space-y-4">
+                    <!-- User details will be dynamically added here -->
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button onclick="closeUserDetailsModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-200">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+
+                // Close mobile menu when navigation links are clicked
+                const mobileNavLinks = mobileMenu.querySelectorAll('a');
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', function () {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+
+        // Check if admin is logged in
+        const admin = JSON.parse(localStorage.getItem('admin'));
+        if (!admin) {
+            window.location.href = '/admin/login';
+        }
+
+        // Show status message
+        function showStatus(message, isError = false) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = isError
+                ? 'block mb-6 p-4 bg-red-100 text-red-700 rounded-lg'
+                : 'block mb-6 p-4 bg-green-100 text-green-700 rounded-lg';
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusEl.className = 'hidden mb-6 p-4 rounded-lg';
+            }, 5000);
+        }
+
+        // Fetch dashboard stats
+        async function fetchStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch stats');
+                }
+
+                const stats = await response.json();
+
+                // Update stats in UI
+                document.getElementById('totalUsers').textContent = stats.totalUsers;
+                document.getElementById('activeUsers').textContent = stats.activeUsers;
+                document.getElementById('blockedUsers').textContent = stats.blockedUsers;
+                document.getElementById('totalPosts').textContent = stats.totalPosts;
+
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+                showStatus('Error loading statistics. Please try again later.', true);
+            }
+        }
+
+        // Fetch users with pagination
+        let currentPage = 1;
+        const usersPerPage = 9;
+
+        async function fetchUsers(page = 1) {
+            try {
+                currentPage = page;
+                const response = await fetch(`/api/admin/users?page=${page}&limit=${usersPerPage}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const data = await response.json();
+                renderUsers(data.users);
+                renderPagination(data.totalPages, page);
+
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                showStatus('Error loading users. Please try again later.', true);
+            }
+        }
+
+        // Search users
+        async function searchUsers() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                fetchUsers();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/users/search?term=${encodeURIComponent(searchTerm)}`);
+                if (!response.ok) {
+                    throw new Error('Failed to search users');
+                }
+
+                const data = await response.json();
+                renderUsers(data.users);
+
+                // Hide pagination for search results
+                document.getElementById('pagination').innerHTML = '';
+
+            } catch (error) {
+                console.error('Error searching users:', error);
+                showStatus('Error searching users. Please try again later.', true);
+            }
+        }
+
+        // Render users list
+        function renderUsers(users) {
+            const usersList = document.getElementById('usersList');
+
+            if (users.length === 0) {
+                usersList.innerHTML = '<div class="col-span-full bg-white shadow rounded-lg p-6 text-center text-gray-500">No users found.</div>';
+                return;
+            }
+
+            usersList.innerHTML = users.map(user => `
+                <div class="bg-white shadow rounded-lg p-4">
+                    <div class="flex flex-col items-center mb-4">
+                        <img class="h-16 w-16 rounded-full object-cover mb-2" 
+                             src="${user.profilePicture || '/images/default-avatar.png'}">
+                        <h3 class="font-semibold text-lg">${user.name}</h3>
+                        <p class="text-gray-500 text-sm">${user.email}</p>
+                    </div>
+                    
+                    <div class="space-y-1 mb-4">
+                        <p class="text-sm"><span class="font-medium">Phone:</span> ${user.phoneNumber}</p>
+                                               <p class="text-sm"><span class="font-medium">Phone:</span> ${user.phoneNumber || 'N/A'}</p>
+                        <p class="text-sm"><span class="font-medium">Country:</span> ${user.country || 'N/A'}</p>
+                        <p class="text-sm"><span class="font-medium">Status:</span> 
+                            <span class="px-2 py-1 rounded text-xs ${user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${user.isBlocked ? 'Blocked' : 'Active'}
+                            </span>
+                        </p>
+                        <p class="text-sm"><span class="font-medium">Joined:</span> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    
+                    <div class="flex flex-col space-y-2">
+                        <button onclick="viewUserDetails('${user._id}')" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition duration-200">
+                            View Details
+                        </button>
+                        <button onclick="toggleUserStatus('${user._id}', ${user.isBlocked})" 
+                                class="px-3 py-1 rounded text-sm transition duration-200 ${user.isBlocked ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'}">
+                            ${user.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render pagination
+        function renderPagination(totalPages, currentPage) {
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Previous button
+            if (currentPage > 1) {
+                paginationHTML += `<button onclick="fetchUsers(${currentPage - 1})" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-200">Previous</button>`;
+            }
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    paginationHTML += `<button class="px-3 py-1 bg-blue-500 text-white rounded">${i}</button>`;
+                } else {
+                    paginationHTML += `<button onclick="fetchUsers(${i})" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-200">${i}</button>`;
+                }
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                paginationHTML += `<button onclick="fetchUsers(${currentPage + 1})" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-200">Next</button>`;
+            }
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // View user details
+        async function viewUserDetails(userId) {
+            try {
+                const response = await fetch(`/api/admin/users/${userId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details');
+                }
+
+                const user = await response.json();
+
+                const userDetailsContent = document.getElementById('userDetailsContent');
+                userDetailsContent.innerHTML = `
+                    <div class="flex flex-col items-center mb-4">
+                        <img class="h-24 w-24 rounded-full object-cover mb-2" 
+                             src="${user.profilePicture || '/images/default-avatar.png'}">
+                        <h3 class="font-semibold text-xl">${user.name}</h3>
+                        <p class="text-gray-500">${user.email}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Phone Number:</p>
+                            <p class="text-sm text-gray-900">${user.phoneNumber || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Country:</p>
+                            <p class="text-sm text-gray-900">${user.country || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Gender:</p>
+                            <p class="text-sm text-gray-900">${user.gender || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Date of Birth:</p>
+                            <p class="text-sm text-gray-900">${user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Status:</p>
+                            <span class="px-2 py-1 rounded text-xs ${user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${user.isBlocked ? 'Blocked' : 'Active'}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Joined:</p>
+                            <p class="text-sm text-gray-900">${new Date(user.createdAt).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('userDetailsModal').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+                showStatus('Error loading user details. Please try again later.', true);
+            }
+        }
+
+        // Close user details modal
+        function closeUserDetailsModal() {
+            document.getElementById('userDetailsModal').classList.add('hidden');
+        }
+
+        // Toggle user status (block/unblock)
+        async function toggleUserStatus(userId, isCurrentlyBlocked) {
+            const action = isCurrentlyBlocked ? 'unblock' : 'block';
+            const confirmMessage = `Are you sure you want to ${action} this user?`;
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}/${action}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to ${action} user`);
+                }
+
+                showStatus(`User ${action}ed successfully!`);
+                fetchUsers(currentPage);
+                fetchStats(); // Refresh stats
+
+            } catch (error) {
+                console.error(`Error ${action}ing user:`, error);
+                showStatus(`Error ${action}ing user. Please try again later.`, true);
+            }
+        }
+
+        // Add enter key support for search
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchUsers();
+            }
+        });
+
+        // Logout functionality for desktop
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('admin');
+                window.location.href = '/admin/login';
+            }
+        });
+
+        // Logout functionality for mobile
+        document.getElementById('logoutBtnMobile').addEventListener('click', function () {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('admin');
+                window.location.href = '/admin/login';
+            }
+        });
+
+        // Initialize page
+        fetchStats();
+        fetchUsers();
+    </script>
+</body>
+
+</html>

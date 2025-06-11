@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>Admin - User Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand Section -->
+                <div class="flex items-center space-x-3">
+                    <img src="/dev.jpeg" alt="Dev Community Logo"
+                        class="h-8 w-8 md:h-10 md:w-10 object-contain">
+                    <div class="flex flex-col">
+                        <span class="text-sm md:text-lg font-bold text-white"> Dev Community</span>
+                        <span class="text-xs md:text-sm font-medium text-gray-300">Admin Dashboard</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/admin/dashboard"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Dashboard
+                    </a>
+                    <a href="/admin/users"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-white transition duration-200">
+                        Users
+                    </a>
+                    <a href="/admin/posts"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Posts
+                    </a>
+                    <button id="logoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                        onclick="localStorage.clear(); window.location.href='/login'">
+                        Logout
+                    </button>
+
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn"
+                        class="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 p-2">
+                        <div class="w-6 h-6 flex flex-col justify-center items-center">
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-gray-800 border-t border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/admin/dashboard"
+                    class="block text-white hover:text-gray-300 hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Dashboard
+                </a>
+                <a href="/admin/users"
+                    class="block text-white hover:text-gray-300 hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium border-l-4 border-white transition duration-200">
+                    Users
+                </a>
+                <a href="/admin/posts"
+                    class="block text-white hover:text-gray-300 hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Posts
+                </a>
+                <button id="logoutBtnMobile"
+                    class="block w-full text-left bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold mb-8">User Analytics</h1>
+
+        <!-- Status message -->
+        <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4 text-left">
+                        <p class="text-gray-500">Total Users</p>
+                        <p id="totalUsers" class="text-2xl font-semibold">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-500">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4 text-left">
+                        <p class="text-gray-500">Male Users</p>
+                        <p id="maleUsers" class="text-2xl font-semibold">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-500">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4 text-left">
+                        <p class="text-gray-500">Female Users</p>
+                        <p id="femaleUsers" class="text-2xl font-semibold">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow rounded-lg p-6 text-center">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4 text-left">
+                        <p class="text-gray-500">Avg. Age</p>
+                        <p id="avgAge" class="text-2xl font-semibold">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Country Distribution Chart -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">User Distribution by Country</h2>
+                <canvas id="countryChart" height="300"></canvas>
+            </div>
+
+            <!-- Gender Distribution Chart -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Gender Distribution</h2>
+                <canvas id="genderChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Age Distribution Chart -->
+        <div class="bg-white shadow rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Age Distribution</h2>
+            <canvas id="ageChart" height="200"></canvas>
+        </div>
+
+        <!-- User List Section -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-3 sm:space-y-0">
+                <h2 class="text-xl font-semibold">User List</h2>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <input type="text" id="searchInput" placeholder="Search users..."
+                        class="w-full sm:w-auto px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div class="flex space-x-2">
+                        <button onclick="searchUsers()"
+                            class="flex-1 sm:flex-none bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                            Search
+                        </button>
+                        <button onclick="fetchUsers()"
+                            class="flex-1 sm:flex-none bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Country</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Gender</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Age</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Joined</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable" class="bg-white divide-y divide-gray-200">
+                        <!-- User data will be loaded here -->
+                        <tr>
+                            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                Loading users...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-6 flex justify-center">
+                <div class="flex space-x-2" id="pagination">
+                    <!-- Pagination will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+
+                // Close mobile menu when navigation links are clicked
+                const mobileNavLinks = mobileMenu.querySelectorAll('a');
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', function () {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+        // Check if admin is logged in
+        const admin = JSON.parse(localStorage.getItem('admin'));
+        if (!admin) {
+            window.location.href = '/admin/login';
+        }
+
+        // Show status message
+        function showStatus(message, isError = false) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = isError
+                ? 'block mb-6 p-4 bg-red-100 text-red-700 rounded-lg'
+                : 'block mb-6 p-4 bg-green-100 text-green-700 rounded-lg';
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusEl.className = 'hidden mb-6 p-4 rounded-lg';
+            }, 5000);
+        }
+
+        // Fetch user analytics data
+        async function fetchUserAnalytics() {
+            try {
+                const response = await fetch('/api/admin/users/analytics');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user analytics');
+                }
+
+                const data = await response.json();
+
+                // Update stats in UI
+                document.getElementById('totalUsers').textContent = data.totalUsers;
+                document.getElementById('maleUsers').textContent = data.genderStats.male;
+                document.getElementById('femaleUsers').textContent = data.genderStats.female;
+                document.getElementById('avgAge').textContent = data.avgAge.toFixed(1);
+
+                // Create charts
+                createCountryChart(data.countryStats);
+                createGenderChart(data.genderStats);
+                createAgeChart(data.ageStats);
+
+            } catch (error) {
+                console.error('Error fetching user analytics:', error);
+                showStatus('Error loading user analytics. Please try again later.', true);
+            }
+        }
+
+        // Create country distribution chart
+        function createCountryChart(countryStats) {
+            const ctx = document.getElementById('countryChart').getContext('2d');
+
+            // Sort countries by user count (descending)
+            const sortedCountries = Object.entries(countryStats)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10); // Show top 10 countries
+
+            const labels = sortedCountries.map(item => item[0]);
+            const data = sortedCountries.map(item => item[1]);
+
+            // Generate colors
+            const backgroundColors = generateColors(labels.length);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Users',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(color => color.replace('0.7', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create gender distribution chart
+        function createGenderChart(genderStats) {
+            const ctx = document.getElementById('genderChart').getContext('2d');
+
+            const labels = Object.keys(genderStats).map(key =>
+                key.charAt(0).toUpperCase() + key.slice(1) // Capitalize first letter
+            );
+            const data = Object.values(genderStats);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(255, 206, 86, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create age distribution chart
+        function createAgeChart(ageStats) {
+            const ctx = document.getElementById('ageChart').getContext('2d');
+
+            const labels = Object.keys(ageStats);
+            const data = Object.values(ageStats);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Users',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate random colors for charts
+        function generateColors(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                const hue = (i * 137) % 360; // Use golden angle to get evenly distributed colors
+                colors.push(`hsla(${hue}, 70%, 60%, 0.7)`);
+            }
+            return colors;
+        }
+
+        // Calculate age from date of birth
+        function calculateAge(dateOfBirth) {
+            const dob = new Date(dateOfBirth);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+
+        // Current page for pagination
+        let currentPage = 1;
+
+        // Fetch users with pagination
+        async function fetchUsers(page = 1) {
+            try {
+                currentPage = page;
+                const response = await fetch(`/api/admin/users?page=${page}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const data = await response.json();
+                renderUsers(data.users);
+                renderPagination(data.totalPages, data.currentPage);
+
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                document.getElementById('userTable').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center text-red-500">
+                            Error loading users. Please try again later.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Search users
+        async function searchUsers() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                fetchUsers();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/users/search?term=${encodeURIComponent(searchTerm)}`);
+                if (!response.ok) {
+                    throw new Error('Failed to search users');
+                }
+
+                const data = await response.json();
+                renderUsers(data.users);
+
+                // Hide pagination for search results
+                document.getElementById('pagination').innerHTML = '';
+
+            } catch (error) {
+                console.error('Error searching users:', error);
+                showStatus('Error searching users. Please try again.', true);
+            }
+        }
+
+        // Render users table
+        function renderUsers(users) {
+            const userTable = document.getElementById('userTable');
+
+            if (!users || users.length === 0) {
+                userTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                            No users found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            userTable.innerHTML = users.map(user => {
+                const age = calculateAge(user.dateOfBirth);
+
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <img class="h-10 w-10 rounded-full" 
+                                     src="${user.profilePicture || '/images/default-avatar.png'}">
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${user.name}</div>
+                                    <div class="text-sm text-gray-500">${user.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${user.country}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${age} years
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${new Date(user.createdAt).toLocaleDateString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${user.isBlocked ? 'Blocked' : 'Active'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="viewUserDetails('${user._id}')" class="text-blue-600 hover:text-blue-900">
+                                    View
+                                </button>
+                                ${user.isBlocked ?
+                        `<button onclick="unblockUser('${user._id}')" class="text-green-600 hover:text-green-900">
+                                        Unblock
+                                    </button>` :
+                        `<button onclick="blockUser('${user._id}')" class="text-red-600 hover:text-red-900">
+                                        Block
+                                    </button>`
+                    }
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render pagination
+        function renderPagination(totalPages, currentPage) {
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Previous button
+            paginationHTML += `
+                <button 
+                    onclick="fetchUsers(${Math.max(1, currentPage - 1)})" 
+                    class="px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+                    ${currentPage === 1 ? 'disabled' : ''}
+                >
+                    Previous
+                </button>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <button 
+                        onclick="fetchUsers(${i})" 
+                        class="px-3 py-1 rounded-md ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+                    >
+                        ${i}
+                    </button>
+                `;
+            }
+
+            // Next button
+            paginationHTML += `
+                <button 
+                    onclick="fetchUsers(${Math.min(totalPages, currentPage + 1)})" 
+                    class="px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+                    ${currentPage === totalPages ? 'disabled' : ''}
+                >
+                    Next
+                </button>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // View user details
+        function viewUserDetails(userId) {
+            // Redirect to user detail page or show modal with user details
+            window.location.href = `/admin/users/${userId}`;
+        }
+
+        // Block user
+        async function blockUser(userId) {
+            if (confirm('Are you sure you want to block this user?')) {
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/block`, {
+                        method: 'PUT'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to block user');
+                    }
+
+                    showStatus('User blocked successfully');
+
+                    // Refresh data
+                    fetchUserAnalytics();
+                    fetchUsers(currentPage);
+
+                } catch (error) {
+                    console.error('Error blocking user:', error);
+                    showStatus('Error blocking user. Please try again later.', true);
+                }
+            }
+        }
+
+        // Unblock user
+        async function unblockUser(userId) {
+            if (confirm('Are you sure you want to unblock this user?')) {
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/unblock`, {
+                        method: 'PUT'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to unblock user');
+                    }
+
+                    showStatus('User unblocked successfully');
+
+                    // Refresh data
+                    fetchUserAnalytics();
+                    fetchUsers(currentPage);
+
+                } catch (error) {
+                    console.error('Error unblocking user:', error);
+                    showStatus('Error unblocking user. Please try again later.', true);
+                }
+            }
+        }
+
+        // Logout functionality for mobile
+        document.getElementById('logoutBtnMobile').addEventListener('click', function () {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('admin');
+                window.location.href = '/admin/login';
+            }
+        });
+
+        // Initialize page
+        fetchUserAnalytics();
+        fetchUsers();
+    </script>
+</body>
+
+</html>

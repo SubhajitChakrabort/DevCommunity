@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>Admin - User Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">Admin Dashboard</span>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <a href="/admin/dashboard"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="/admin/users"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-white">
+                        Users
+                    </a>
+                    <a href="/admin/posts"
+                        class="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium">
+                        Posts
+                    </a>
+                    <button id="logoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                        onclick="localStorage.clear(); window.location.href='/login'">
+                        Logout
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="/admin/users" class="text-blue-500 hover:text-blue-700 mr-4">
+                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Users
+            </a>
+            <h1 class="text-3xl font-bold">User Details</h1>
+        </div>
+
+        <!-- Status message -->
+        <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+
+        <!-- User Profile Section -->
+        <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Profile Picture Section -->
+                    <div class="md:w-1/3 flex flex-col items-center mb-6 md:mb-0">
+                        <img id="profileImage" class="h-40 w-40 rounded-full object-cover border-4 border-gray-200"
+                            src="/images/default-avatar.png" alt="Profile Picture">
+                        <h2 id="userName" class="text-xl font-semibold mt-4">User Name</h2>
+                        <p id="userEmail" class="text-gray-600">user@example.com</p>
+                        <div id="userStatus" class="mt-2">
+                            <span
+                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Active
+                            </span>
+                        </div>
+                        <div class="mt-4 space-y-2">
+                            <button id="blockBtn"
+                                class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 hidden">
+                                Block User
+                            </button>
+                            <button id="unblockBtn"
+                                class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 hidden">
+                                Unblock User
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- User Details Section -->
+                    <div class="md:w-2/3 md:pl-8">
+                        <h3 class="text-lg font-semibold mb-4">User Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Phone Number</p>
+                                <p id="userPhone" class="font-medium">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Country</p>
+                                <p id="userCountry" class="font-medium">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Gender</p>
+                                <p id="userGender" class="font-medium">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Age</p>
+                                <p id="userAge" class="font-medium">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Date of Birth</p>
+                                <p id="userDOB" class="font-medium">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Joined</p>
+                                <p id="userJoined" class="font-medium">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Activity Section -->
+        <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold mb-4">User Activity</h3>
+
+                <!-- Activity Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-500">Total Posts</p>
+                        <p id="userPostsCount" class="text-2xl font-semibold">0</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-500">Total Comments</p>
+                        <p id="userCommentsCount" class="text-2xl font-semibold">0</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-500">Total Likes</p>
+                        <p id="userLikesCount" class="text-2xl font-semibold">0</p>
+                    </div>
+                </div>
+
+                <!-- Recent Posts -->
+                <h4 class="text-md font-semibold mb-2">Recent Posts</h4>
+                <div id="userPosts" class="space-y-4 mb-6">
+                    <p class="text-gray-500 text-center py-4">Loading posts...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in
+        const admin = JSON.parse(localStorage.getItem('admin'));
+        if (!admin) {
+            window.location.href = '/admin/login';
+        }
+
+        // Get user ID from URL
+        const userId = window.location.pathname.split('/').pop();
+
+        // Show status message
+        function showStatus(message, isError = false) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = isError
+                ? 'block mb-6 p-4 bg-red-100 text-red-700 rounded-lg'
+                : 'block mb-6 p-4 bg-green-100 text-green-700 rounded-lg';
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusEl.className = 'hidden mb-6 p-4 rounded-lg';
+            }, 5000);
+        }
+
+        // Calculate age from date of birth
+        function calculateAge(dateOfBirth) {
+            const dob = new Date(dateOfBirth);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Fetch user details
+        async function fetchUserDetails() {
+            try {
+                const response = await fetch(`/api/admin/users/${userId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details');
+                }
+
+                const user = await response.json();
+
+                // Update UI with user details
+                document.getElementById('profileImage').src = user.profilePicture || '/images/default-avatar.png';
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+
+                // Update user status
+                const userStatus = document.getElementById('userStatus');
+                userStatus.innerHTML = `
+                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                        ${user.isBlocked ? 'Blocked' : 'Active'}
+                    </span>
+                `;
+
+                // Show appropriate action button
+                if (user.isBlocked) {
+                    document.getElementById('unblockBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('blockBtn').classList.remove('hidden');
+                }
+
+                // Update user information
+                document.getElementById('userPhone').textContent = user.phoneNumber;
+                document.getElementById('userCountry').textContent = user.country;
+                document.getElementById('userGender').textContent = user.gender.charAt(0).toUpperCase() + user.gender.slice(1);
+                document.getElementById('userAge').textContent = `${calculateAge(user.dateOfBirth)} years`;
+                document.getElementById('userDOB').textContent = formatDate(user.dateOfBirth);
+                document.getElementById('userJoined').textContent = formatDate(user.createdAt);
+
+                // Fetch user activity data
+                fetchUserActivity(userId);
+
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+                showStatus('Error loading user details. Please try again later.', true);
+            }
+        }
+
+        // Fetch user activity
+        async function fetchUserActivity(userId) {
+            try {
+                const response = await fetch(`/api/admin/users/${userId}/activity`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user activity');
+                }
+
+                const activity = await response.json();
+
+                // Update activity stats
+                document.getElementById('userPostsCount').textContent = activity.postsCount;
+                document.getElementById('userCommentsCount').textContent = activity.commentsCount;
+                document.getElementById('userLikesCount').textContent = activity.likesCount;
+
+                // Render recent posts
+                renderUserPosts(activity.recentPosts);
+
+            } catch (error) {
+                console.error('Error fetching user activity:', error);
+                document.getElementById('userPosts').innerHTML = `
+                    <p class="text-red-500 text-center py-4">Error loading user activity</p>
+                `;
+            }
+        }
+
+        // Render user posts
+        function renderUserPosts(posts) {
+            const postsContainer = document.getElementById('userPosts');
+
+            if (!posts || posts.length === 0) {
+                postsContainer.innerHTML = `
+                    <p class="text-gray-500 text-center py-4">No posts found</p>
+                `;
+                return;
+            }
+
+            postsContainer.innerHTML = posts.map(post => `
+                <div class="border rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="text-sm text-gray-500">${formatDate(post.createdAt)}</p>
+                        </div>
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${post.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                            ${post.isBlocked ? 'Blocked' : 'Active'}
+                        </span>
+                    </div>
+                    <p class="mb-2">${post.content}</p>
+                    ${post.images && post.images.length > 0 ? `
+                        <div class="grid grid-cols-${Math.min(post.images.length, 2)} gap-2 mb-2">
+                            ${post.images.map(img => `
+                                <img src="${img}" class="rounded-lg w-full h-32 object-cover">
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="flex space-x-4 text-sm text-gray-500">
+                        <span>${post.likes.length} likes</span>
+                        <span>${post.comments.length} comments</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Block user
+        async function blockUser() {
+            if (confirm('Are you sure you want to block this user?')) {
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/block`, {
+                        method: 'PUT'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to block user');
+                    }
+
+                    showStatus('User blocked successfully');
+
+                    // Update UI
+                    document.getElementById('userStatus').innerHTML = `
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            Blocked
+                        </span>
+                    `;
+                    document.getElementById('blockBtn').classList.add('hidden');
+                    document.getElementById('unblockBtn').classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Error blocking user:', error);
+                    showStatus('Error blocking user. Please try again later.', true);
+                }
+            }
+        }
+
+        // Unblock user
+        async function unblockUser() {
+            if (confirm('Are you sure you want to unblock this user?')) {
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/unblock`, {
+                        method: 'PUT'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to unblock user');
+                    }
+
+                    showStatus('User unblocked successfully');
+
+                    // Update UI
+                    document.getElementById('userStatus').innerHTML = `
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Active
+                        </span>
+                    `;
+                    document.getElementById('unblockBtn').classList.add('hidden');
+                    document.getElementById('blockBtn').classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Error unblocking user:', error);
+                    showStatus('Error unblocking user. Please try again later.', true);
+                }
+            }
+        }
+
+        // Add event listeners
+        document.getElementById('blockBtn').addEventListener('click', blockUser);
+        document.getElementById('unblockBtn').addEventListener('click', unblockUser);
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('admin');
+            window.location.href = '/admin/login';
+        });
+
+        // Initialize page
+        fetchUserDetails();
+    </script>
+</body>
+
+</html>

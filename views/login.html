@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+            
+            <!-- Status message -->
+            <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                </div>
+                
+                <!-- Captcha Section - Always show for testing, you can modify this later -->
+                <div id="captchaSection" class="block">
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Programming Challenge</label>
+                        <div id="captchaQuestion" class="bg-blue-50 p-3 rounded border text-sm font-mono mb-3"></div>
+                        <input 
+                            type="text" 
+                            id="captchaAnswer" 
+                            placeholder="Enter your answer" 
+                            class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            onclick="generateCaptcha()" 
+                            class="mt-2 text-sm text-blue-500 hover:text-blue-700"
+                        >
+                            Generate New Challenge
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Login
+                </button>
+                <div class="text-center">
+                    <a href="/register" class="text-sm text-blue-500 hover:text-blue-700">Don't have an account? Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentCaptcha = null;
+        let loginAttempts = 0;
+        
+        // Programming captcha questions
+        const captchaQuestions = [
+            {
+                question: "What is the output of: console.log(2 + 3 * 4)?",
+                answer: "14",
+                explanation: "Order of operations: 3 * 4 = 12, then 2 + 12 = 14"
+            },
+            {
+                question: "What is the result of: 'Hello'.length?",
+                answer: "5",
+                explanation: "The string 'Hello' has 5 characters"
+            },
+            {
+                question: "What does [1, 2, 3].indexOf(2) return?",
+                answer: "1",
+                explanation: "indexOf returns the index position, 2 is at index 1"
+            },
+            {
+                question: "What is the output of: Math.floor(4.7)?",
+                answer: "4",
+                explanation: "Math.floor rounds down to the nearest integer"
+            },
+            {
+                question: "What is the result of: true && false?",
+                answer: "false",
+                explanation: "Logical AND returns false if any operand is false"
+            },
+            {
+                question: "What does 'abc'.charAt(1) return?",
+                answer: "b",
+                explanation: "charAt(1) returns the character at index 1, which is 'b'"
+            },
+            {
+                question: "What is the output of: 10 % 3?",
+                answer: "1",
+                explanation: "Modulo operator returns the remainder: 10 ÷ 3 = 3 remainder 1"
+            },
+            {
+                question: "What is the result of: [1, 2, 3].length?",
+                answer: "3",
+                explanation: "The array has 3 elements"
+            },
+            {
+                question: "What does parseInt('123abc') return?",
+                answer: "123",
+                explanation: "parseInt extracts the number from the beginning of the string"
+            },
+            {
+                question: "What is the output of: 5 == '5'?",
+                answer: "true",
+                explanation: "== performs type coercion, so 5 equals '5'"
+            },
+            {
+                question: "What is the result of: !true?",
+                answer: "false",
+                explanation: "! is the NOT operator, so !true equals false"
+            },
+            {
+                question: "What does 'Hello World'.split(' ').length return?",
+                answer: "2",
+                explanation: "Split by space creates ['Hello', 'World'], length is 2"
+            },
+            {
+                question: "What is the output of: Math.max(1, 5, 3)?",
+                answer: "5",
+                explanation: "Math.max returns the largest number"
+            },
+            {
+                question: "What is the result of: typeof 'hello'?",
+                answer: "string",
+                explanation: "typeof returns the data type"
+            },
+            {
+                question: "What does [1, 2, 3].pop() return?",
+                answer: "3",
+                explanation: "pop() removes and returns the last element"
+            },
+            {
+                question: "What is the output of: 2 ** 3?",
+                answer: "8",
+                explanation: "** is the exponentiation operator: 2³ = 8"
+            },
+            {
+                question: "What is the result of: 'ABC'.toLowerCase()?",
+                answer: "abc",
+                explanation: "toLowerCase() converts all characters to lowercase"
+            },
+            {
+                question: "What does Math.round(4.6) return?",
+                answer: "5",
+                explanation: "Math.round rounds to the nearest integer"
+            },
+            {
+                question: "What is the output of: 0 || 'default'?",
+                answer: "default",
+                explanation: "|| returns the first truthy value, 0 is falsy"
+            },
+            {
+                question: "What is the result of: [1, 2, 3].join('-')?",
+                answer: "1-2-3",
+                explanation: "join() combines array elements with the specified separator"
+            }
+        ];
+        
+        // Show status message
+        function showStatus(message, isError = false) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = isError 
+                ? 'block mb-6 p-4 bg-red-100 text-red-700 rounded-lg'
+                : 'block mb-6 p-4 bg-green-100 text-green-700 rounded-lg';
+            
+            setTimeout(() => {
+                statusEl.className = 'hidden mb-6 p-4 rounded-lg';
+            }, 5000);
+        }
+        
+        // Generate random captcha
+        function generateCaptcha() {
+            const randomIndex = Math.floor(Math.random() * captchaQuestions.length);
+            currentCaptcha = captchaQuestions[randomIndex];
+            document.getElementById('captchaQuestion').textContent = currentCaptcha.question;
+            document.getElementById('captchaAnswer').value = '';
+        }
+        
+        // Check if captcha should be shown (after 3 attempts)
+        function shouldShowCaptcha() {
+            const attempts = localStorage.getItem('loginAttempts') || 0;
+            return parseInt(attempts) >= 3;
+        }
+        
+        // Verify captcha answer
+        function verifyCaptcha() {
+            const userAnswer = document.getElementById('captchaAnswer').value.trim().toLowerCase();
+            const correctAnswer = currentCaptcha.answer.toLowerCase();
+            
+            if (userAnswer === correctAnswer) {
+                return true;
+            } else {
+                showStatus(`Incorrect! ${currentCaptcha.explanation}`, true);
+                generateCaptcha(); // Generate new captcha
+                return false;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Always verify captcha (for testing - you can modify this logic later)
+            if (!currentCaptcha) {
+                showStatus('Please solve the programming challenge first.', true);
+                return;
+            }
+            
+            if (!verifyCaptcha()) {
+                return; // Captcha failed, don't proceed
+            }
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Reset login attempts on successful login
+                    localStorage.removeItem('loginAttempts');
+                    
+                    // Store user data
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    
+                    showStatus('Login successful! Redirecting...', false);
+                    
+                    // Redirect to all-users page (student dashboard)
+                    setTimeout(() => {
+                        window.location.href = '/all-users';
+                    }, 1000);
+                } else {
+                    // Increment login attempts
+                    loginAttempts = parseInt(localStorage.getItem('loginAttempts') || 0) + 1;
+                    localStorage.setItem('loginAttempts', loginAttempts);
+                    
+                    showStatus('Login failed: ' + result.error, true);
+                    
+                    // Generate new captcha for next attempt
+                    generateCaptcha();
+                }
+            } catch (error) {
+                showStatus('Error during login: ' + error.message, true);
+                
+                // Increment attempts on error too
+                loginAttempts = parseInt(localStorage.getItem('loginAttempts') || 0) + 1;
+                localStorage.setItem('loginAttempts', loginAttempts);
+                
+                // Generate new captcha for next attempt
+                generateCaptcha();
+            }
+        });
+        
+        // Initialize captcha on page load
+        window.addEventListener('load', function() {
+            generateCaptcha(); // Always show captcha for testing
+        });
+    </script>
+</body>
+</html>

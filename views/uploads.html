@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>My Posts & Uploads</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .post-actions {
+            display: none;
+        }
+
+        .post-container:hover .post-actions {
+            display: flex;
+        }
+
+        .edit-form {
+            display: none;
+        }
+
+        .comment-actions {
+            display: none;
+        }
+
+        .comment-container:hover .comment-actions {
+            display: flex;
+        }
+
+        .reply-actions {
+            display: none;
+        }
+
+        .reply-container:hover .reply-actions {
+            display: flex;
+        }
+
+        .liked {
+            color: #ef4444;
+            fill: #ef4444;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand Section -->
+                <div class="flex items-center space-x-3">
+                    <img src="/dev.jpeg" alt="CIT Dev Community Logo" class="h-8 w-8 md:h-10 md:w-10 object-contain">
+                    <div class="flex flex-col">
+                        <span class="text-sm md:text-lg font-bold text-gray-800"> Dev Community</span>
+                        <span id="welcomeUser" class="text-xs md:text-sm font-medium text-gray-600">Welcome</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/all-users"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        All Posts
+                    </a>
+                    <a href="/uploads"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Uploads
+                    </a>
+                    <a href="/profile"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        View Profile
+                    </a>
+                    <div class="relative">
+                        <a href="/profile" class="flex items-center">
+                            <img id="userProfilePic" class="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                                src="/images/default-avatar.png" alt="Profile">
+                        </a>
+                    </div>
+                    <button id="logoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                        onclick="localStorage.clear(); window.location.href='/login'">
+                        Logout
+                    </button>
+
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn"
+                        class="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600 p-2">
+                        <div class="w-6 h-6 flex flex-col justify-center items-center">
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/all-users"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    All Posts
+                </a>
+                <a href="/uploads"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Uploads
+                </a>
+                <a href="/profile"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    View Profile
+                </a>
+                <div class="flex items-center px-3 py-2 space-x-3">
+                    <img id="userProfilePicMobile" class="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                        src="/images/default-avatar.png" alt="Profile">
+                    <span class="text-gray-700 text-base font-medium">Profile</span>
+                </div>
+                <button id="logoutBtnMobile"
+                    class="block w-full text-left bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="max-w-2xl mx-auto px-4 py-6">
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Create New Post</h2>
+            <form id="postForm" class="space-y-4">
+                <div>
+                    <textarea id="postContent" placeholder="What's on your mind?"
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        rows="3" required></textarea>
+                </div>
+                <div>
+                    <input type="text" id="hashtags" placeholder="Add hashtags (separated by spaces) #travel #food"
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                    <input type="file" id="postImage" accept="image/*" class="hidden" multiple>
+                    <label for="postImage" class="cursor-pointer flex flex-col items-center">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="mt-2 text-sm text-gray-600">Add Photos</span>
+                    </label>
+                    <div id="imagePreview" class="mt-4 grid grid-cols-2 gap-2"></div>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                    Post
+                </button>
+            </form>
+        </div>
+
+        <!-- Status message -->
+        <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+
+        <!-- User's Posts Feed -->
+        <h2 class="text-xl font-semibold mb-4">My Posts</h2>
+        <div id="userPostsFeed" class="space-y-6">
+            <!-- User's posts will be dynamically added here -->
+            <div class="bg-white shadow rounded-lg p-6 text-center text-gray-500">
+                Loading your posts...
+            </div>
+        </div>
+
+        <!-- Edit Post Modal -->
+        <div id="editPostModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+                <h3 class="text-xl font-semibold mb-4">Edit Post</h3>
+                <form id="editPostForm" class="space-y-4">
+                    <input type="hidden" id="editPostId">
+                    <div>
+                        <textarea id="editPostContent"
+                            class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows="3" required></textarea>
+                    </div>
+                    <div>
+                        <input type="text" id="editHashtags"
+                            placeholder="Add hashtags (separated by spaces) #travel #food"
+                            class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                        <input type="file" id="editPostImage" accept="image/*" class="hidden" multiple>
+                        <label for="editPostImage" class="cursor-pointer flex flex-col items-center">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="mt-2 text-sm text-gray-600">Change Photos</span>
+                        </label>
+                        <div id="editImagePreview" class="mt-4 grid grid-cols-2 gap-2"></div>
+                        <div id="currentImages" class="mt-4 grid grid-cols-2 gap-2"></div>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelEdit"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Comment Modal -->
+        <div id="editCommentModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+                <h3 class="text-xl font-semibold mb-4">Edit Comment</h3>
+                <form id="editCommentForm" class="space-y-4">
+                    <input type="hidden" id="editCommentId">
+                    <input type="hidden" id="editCommentPostId">
+                    <div>
+                        <textarea id="editCommentText"
+                            class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows="3" required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelCommentEdit"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Reply Modal -->
+        <div id="editReplyModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+                <h3 class="text-xl font-semibold mb-4">Edit Reply</h3>
+                <form id="editReplyForm" class="space-y-4">
+                    <input type="hidden" id="editReplyId">
+                    <input type="hidden" id="editReplyCommentId">
+                    <input type="hidden" id="editReplyPostId">
+                    <div>
+                        <textarea id="editReplyText"
+                            class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows="3" required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelReplyEdit"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get user data from localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = '/login';
+        }
+
+        // Update welcome message and profile picture
+        document.getElementById('welcomeUser').textContent = `Welcome, ${user.name}`;
+        // Update profile pictures for both desktop and mobile views
+        if (user.profilePicture) {
+            document.getElementById('userProfilePic').src = user.profilePicture;
+            document.getElementById('userProfilePicMobile').src = user.profilePicture;
+        } else {
+            document.getElementById('userProfilePic').src = '/images/default-avatar.png';
+            document.getElementById('userProfilePicMobile').src = '/images/default-avatar.png';
+        }
+
+
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile menu button clicked'); // Debug log
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+
+                // Close mobile menu when navigation links are clicked
+                const mobileNavLinks = mobileMenu.querySelectorAll('a');
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', function () {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+
+        // Show status message
+        function showStatus(message, isError = false) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = isError
+                ? 'block mb-6 p-4 bg-red-100 text-red-700 rounded-lg'
+                : 'block mb-6 p-4 bg-green-100 text-green-700 rounded-lg';
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusEl.className = 'hidden mb-6 p-4 rounded-lg';
+            }, 5000);
+        }
+
+        // Handle image preview
+        document.getElementById('postImage').addEventListener('change', function (e) {
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.innerHTML = '';
+
+            [...e.target.files].forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-full h-32 object-cover rounded-lg';
+                    imagePreview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Handle edit image preview
+        document.getElementById('editPostImage').addEventListener('change', function (e) {
+            const imagePreview = document.getElementById('editImagePreview');
+            imagePreview.innerHTML = '';
+
+            [...e.target.files].forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-full h-32 object-cover rounded-lg';
+                    imagePreview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Handle post submission
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const content = document.getElementById('postContent').value;
+            if (!content.trim()) {
+                showStatus('Please enter some content for your post', true);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('content', content);
+            formData.append('hashtags', document.getElementById('hashtags').value);
+            formData.append('userId', user.id); // Add user ID
+
+            const imageFiles = document.getElementById('postImage').files;
+            [...imageFiles].forEach(file => {
+                formData.append('images', file);
+            });
+
+            try {
+                showStatus('Creating your post...');
+
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Clear form and refresh posts
+                    e.target.reset();
+                    document.getElementById('imagePreview').innerHTML = '';
+                    showStatus('Post created successfully!');
+                    fetchUserPosts();
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to create post: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error creating post:', error);
+                showStatus('Failed to create post. Please try again.', true);
+            }
+        });
+
+        // Handle edit post submission
+        document.getElementById('editPostForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const postId = document.getElementById('editPostId').value;
+            const content = document.getElementById('editPostContent').value;
+
+            if (!content.trim()) {
+                showStatus('Please enter some content for your post', true);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('content', content);
+            formData.append('hashtags', document.getElementById('editHashtags').value);
+
+            const imageFiles = document.getElementById('editPostImage').files;
+            [...imageFiles].forEach(file => {
+                formData.append('images', file);
+            });
+
+            try {
+                showStatus('Updating your post...');
+
+                const response = await fetch(`/api/posts/${postId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    closeEditModal();
+                    showStatus('Post updated successfully!');
+                    fetchUserPosts();
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to update post: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error updating post:', error);
+                showStatus('Failed to update post. Please try again.', true);
+            }
+        });
+
+        // Fetch and display user's posts
+        async function fetchUserPosts() {
+            try {
+                const response = await fetch(`/api/posts/user/${user.id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch posts');
+                }
+
+                const posts = await response.json();
+                console.log('Fetched posts:', posts);
+
+                const userPostsFeed = document.getElementById('userPostsFeed');
+
+                if (posts.length === 0) {
+                    userPostsFeed.innerHTML = '<div class="bg-white shadow rounded-lg p-6 text-center text-gray-500">You haven\'t created any posts yet.</div>';
+                    return;
+                }
+
+                userPostsFeed.innerHTML = posts.map(post => `
+                    <div class="bg-white shadow rounded-lg post-container">
+                        <div class="p-4">
+                            <div class="flex items-center mb-4">
+                                <img class="h-10 w-10 rounded-full mr-4" 
+                                     src="${post.author.profilePicture || '/images/default-avatar.png'}">
+                                <div>
+                                    <h3 class="font-semibold">${post.author.name}</h3>
+                                    <span class="text-gray-500 text-sm">${new Date(post.createdAt).toLocaleString()}</span>
+                                </div>
+                                <div class="ml-auto post-actions space-x-2">
+                                    <button onclick="editPost('${post._id}')" class="text-blue-500 hover:text-blue-700">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="deletePost('${post._id}')" class="text-red-500 hover:text-red-700">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <p class="mb-4">${post.content}</p>
+                            
+                            ${post.images && post.images.length > 0 ? `
+                                <div class="grid grid-cols-${Math.min(post.images.length, 2)} gap-2 mb-4">
+                                    ${post.images.map(img => `
+                                        <img src="${img}" class="rounded-lg w-full h-100 object-cover">
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${post.hashtags.map(tag => `
+                                    <span class="text-blue-500 text-sm">#${tag}</span>
+                                `).join('')}
+                            </div>
+                            
+                            <!-- Post Actions (Like, Comment) -->
+                            <div class="flex items-center space-x-4 border-t border-b py-2 mb-4">
+                                <button onclick="likePost('${post._id}')" class="flex items-center space-x-1 ${post.likes && post.likes.includes(user.id) ? 'liked' : ''}">
+                                    <svg class="w-5 h-5" fill="${post.likes && post.likes.includes(user.id) ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    <span>${post.likes ? post.likes.length : 0} Likes</span>
+                                </button>
+                                <button onclick="toggleCommentForm('${post._id}')" class="flex items-center space-x-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    <span>${post.comments ? post.comments.length : 0} Comments</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Comment Form -->
+                            <div id="commentForm-${post._id}" class="mb-4 hidden">
+                                <form onsubmit="addComment(event, '${post._id}')" class="flex space-x-2">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Write a comment..." 
+                                        class="flex-grow p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    >
+                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                        Post
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <!-- Comments Section -->
+                            <div class="space-y-3">
+                                ${post.comments && post.comments.length > 0 ? post.comments.map(comment => `
+                                    <div class="flex space-x-3 comment-container">
+                                        <img class="h-8 w-8 rounded-full" 
+                                             src="${comment.user.profilePicture || '/images/default-avatar.png'}">
+                                        <div class="flex-grow">
+                                            <div class="bg-gray-50 p-2 rounded-lg">
+                                                <div class="flex justify-between items-start">
+                                                    <div>
+                                                        <span class="font-semibold">${comment.user.name}</span>
+                                                        <span class="text-gray-500 text-xs ml-2">${new Date(comment.createdAt).toLocaleString()}</span>
+                                                        ${comment.edited ? '<span class="text-gray-500 text-xs ml-2">(edited)</span>' : ''}
+                                                    </div>
+                                                    ${comment.user._id === user.id ? `
+                                                        <div class="comment-actions space-x-1">
+                                                            <button onclick="editComment('${post._id}', '${comment._id}', '${comment.text}')" class="text-blue-500 hover:text-blue-700 text-sm">
+                                                                Edit
+                                                            </button>
+                                                            <button onclick="deleteComment('${post._id}', '${comment._id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                                <p class="text-gray-800">${comment.text}</p>
+                                                <button onclick="toggleReplyForm('${post._id}', '${comment._id}')" class="text-sm text-blue-500 mt-1">Reply</button>
+                                            </div>
+                                            
+                                            <!-- Reply Form -->
+                                            <div id="replyForm-${post._id}-${comment._id}" class="mt-2 ml-4 hidden">
+                                                <form onsubmit="addReply(event, '${post._id}', '${comment._id}')" class="flex space-x-2">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Write a reply..." 
+                                                                                                               class="flex-grow p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                        required
+                                                    >
+                                                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm">
+                                                        Reply
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Replies Section -->
+                                           <!-- Replies Section -->
+<div class="space-y-2 mt-2 ml-4">
+    ${comment.replies && comment.replies.length > 0 ? comment.replies.map(reply => {
+                    // Check if user object exists before accessing properties
+                    const userName = reply.user && reply.user.name ? reply.user.name : 'Unknown User';
+                    const userPic = reply.user && reply.user.profilePicture ? reply.user.profilePicture : '/images/default-avatar.png';
+                    const userId = reply.user && reply.user._id ? reply.user._id : '';
+
+                    return `
+            <div class="flex space-x-2 reply-container">
+                <img class="h-6 w-6 rounded-full" 
+                     src="${userPic}">
+                <div class="flex-grow bg-gray-50 p-2 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-semibold text-sm">${userName}</span>
+                            <span class="text-gray-500 text-xs ml-2">${new Date(reply.createdAt).toLocaleString()}</span>
+                            ${reply.edited ? '<span class="text-gray-500 text-xs ml-2">(edited)</span>' : ''}
+                        </div>
+                        ${userId === user.id ? `
+                            <div class="reply-actions space-x-1">
+                                <button onclick="editReply('${post._id}', '${comment._id}', '${reply._id}', '${reply.text}')" class="text-blue-500 hover:text-blue-700 text-xs">
+                                    Edit
+                                </button>
+                                <button onclick="deleteReply('${post._id}', '${comment._id}', '${reply._id}')" class="text-red-500 hover:text-red-700 text-xs">
+                                    Delete
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <p class="text-gray-800 text-sm">${reply.text}</p>
+                </div>
+            </div>
+        `;
+                }).join('') : ''}
+</div>
+
+                                        </div>
+                                    </div>
+                                `).join('') : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                document.getElementById('userPostsFeed').innerHTML =
+                    '<div class="bg-white shadow rounded-lg p-6 text-center text-red-500">Error loading posts. Please try again later.</div>';
+            }
+        }
+        // Edit post function
+        function editPost(postId) {
+            fetch(`/api/posts/user/${user.id}`)
+                .then(response => response.json())
+                .then(posts => {
+                    const post = posts.find(p => p._id === postId);
+                    if (post) {
+                        document.getElementById('editPostId').value = post._id;
+                        document.getElementById('editPostContent').value = post.content;
+
+                        // Format hashtags for display
+                        const hashtagsText = post.hashtags.map(tag => `#${tag}`).join(' ');
+                        document.getElementById('editHashtags').value = hashtagsText;
+
+                        // Display current images
+                        const currentImagesContainer = document.getElementById('currentImages');
+                        currentImagesContainer.innerHTML = '';
+
+                        if (post.images && post.images.length > 0) {
+                            post.images.forEach(img => {
+                                const imgEl = document.createElement('img');
+                                imgEl.src = img;
+                                imgEl.className = 'w-full h-32 object-cover rounded-lg';
+                                currentImagesContainer.appendChild(imgEl);
+                            });
+                        }
+
+                        // Clear new image preview
+                        document.getElementById('editImagePreview').innerHTML = '';
+
+                        // Show modal
+                        document.getElementById('editPostModal').classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching post for edit:', error);
+                    showStatus('Error loading post for editing', true);
+                });
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editPostModal').classList.add('hidden');
+            document.getElementById('editPostForm').reset();
+            document.getElementById('editImagePreview').innerHTML = '';
+            document.getElementById('currentImages').innerHTML = '';
+        }
+
+        // Cancel edit button
+        document.getElementById('cancelEdit').addEventListener('click', closeEditModal);
+
+        // Delete post function
+        async function deletePost(postId) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                try {
+                    const response = await fetch(`/api/posts/${postId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        fetchUserPosts();
+                        showStatus('Post deleted successfully');
+                    } else {
+                        showStatus('Failed to delete post', true);
+                    }
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                    showStatus('Error deleting post', true);
+                }
+            }
+        }
+
+        // Toggle comment form visibility
+        function toggleCommentForm(postId) {
+            const commentForm = document.getElementById(`commentForm-${postId}`);
+            commentForm.classList.toggle('hidden');
+            if (!commentForm.classList.contains('hidden')) {
+                commentForm.querySelector('input').focus();
+            }
+        }
+
+        // Add comment to post
+        async function addComment(event, postId) {
+            event.preventDefault();
+            const form = event.target;
+            const commentText = form.querySelector('input').value;
+
+            if (!commentText.trim()) return;
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: commentText,
+                        userId: user.id
+                    })
+                });
+
+                if (response.ok) {
+                    form.reset();
+                    fetchUserPosts();
+                    showStatus('Comment added successfully');
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to add comment: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                showStatus('Failed to add comment. Please try again.', true);
+            }
+        }
+
+        // Edit comment
+        function editComment(postId, commentId, commentText) {
+            document.getElementById('editCommentPostId').value = postId;
+            document.getElementById('editCommentId').value = commentId;
+            document.getElementById('editCommentText').value = commentText;
+            document.getElementById('editCommentModal').classList.remove('hidden');
+        }
+
+        // Close edit comment modal
+        function closeEditCommentModal() {
+            document.getElementById('editCommentModal').classList.add('hidden');
+            document.getElementById('editCommentForm').reset();
+        }
+
+        // Cancel edit comment button
+        document.getElementById('cancelCommentEdit').addEventListener('click', closeEditCommentModal);
+
+        // Handle edit comment submission
+        document.getElementById('editCommentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const postId = document.getElementById('editCommentPostId').value;
+            const commentId = document.getElementById('editCommentId').value;
+            const text = document.getElementById('editCommentText').value;
+
+            if (!text.trim()) {
+                showStatus('Please enter some text for your comment', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text,
+                        userId: user.id
+                    })
+                });
+
+                if (response.ok) {
+                    closeEditCommentModal();
+                    showStatus('Comment updated successfully!');
+                    fetchUserPosts();
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to update comment: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error updating comment:', error);
+                showStatus('Failed to update comment. Please try again.', true);
+            }
+        });
+
+        // Delete comment
+        async function deleteComment(postId, commentId) {
+            if (confirm('Are you sure you want to delete this comment?')) {
+                try {
+                    const response = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: user.id
+                        })
+                    });
+
+                    if (response.ok) {
+                        showStatus('Comment deleted successfully');
+                        fetchUserPosts();
+                    } else {
+                        const errorData = await response.json();
+                        showStatus(`Failed to delete comment: ${errorData.error}`, true);
+                    }
+                } catch (error) {
+                    console.error('Error deleting comment:', error);
+                    showStatus('Failed to delete comment. Please try again.', true);
+                }
+            }
+        }
+
+        // Toggle reply form visibility
+        function toggleReplyForm(postId, commentId) {
+            const replyForm = document.getElementById(`replyForm-${postId}-${commentId}`);
+            replyForm.classList.toggle('hidden');
+            if (!replyForm.classList.contains('hidden')) {
+                replyForm.querySelector('input').focus();
+            }
+        }
+
+        // Add reply to comment
+        async function addReply(event, postId, commentId) {
+            event.preventDefault();
+            const form = event.target;
+            const replyText = form.querySelector('input').value;
+
+            if (!replyText.trim()) return;
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments/${commentId}/replies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: replyText,
+                        userId: user.id
+                    })
+                });
+
+                if (response.ok) {
+                    form.reset();
+                    fetchUserPosts();
+                    showStatus('Reply added successfully');
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to add reply: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error adding reply:', error);
+                showStatus('Failed to add reply. Please try again.', true);
+            }
+        }
+
+        // Edit reply
+        function editReply(postId, commentId, replyId, replyText) {
+            document.getElementById('editReplyPostId').value = postId;
+            document.getElementById('editReplyCommentId').value = commentId;
+            document.getElementById('editReplyId').value = replyId;
+            document.getElementById('editReplyText').value = replyText;
+            document.getElementById('editReplyModal').classList.remove('hidden');
+        }
+
+        // Close edit reply modal
+        function closeEditReplyModal() {
+            document.getElementById('editReplyModal').classList.add('hidden');
+            document.getElementById('editReplyForm').reset();
+        }
+
+        // Cancel edit reply button
+        document.getElementById('cancelReplyEdit').addEventListener('click', closeEditReplyModal);
+
+        // Handle edit reply submission
+        document.getElementById('editReplyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const postId = document.getElementById('editReplyPostId').value;
+            const commentId = document.getElementById('editReplyCommentId').value;
+            const replyId = document.getElementById('editReplyId').value;
+            const text = document.getElementById('editReplyText').value;
+
+            if (!text.trim()) {
+                showStatus('Please enter some text for your reply', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments/${commentId}/replies/${replyId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+                        text,
+                        userId: user.id
+                    })
+                });
+
+                if (response.ok) {
+                    closeEditReplyModal();
+                    showStatus('Reply updated successfully!');
+                    fetchUserPosts();
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to update reply: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error updating reply:', error);
+                showStatus('Failed to update reply. Please try again.', true);
+            }
+        });
+
+        // Delete reply
+        async function deleteReply(postId, commentId, replyId) {
+            if (confirm('Are you sure you want to delete this reply?')) {
+                try {
+                    const response = await fetch(`/api/posts/${postId}/comments/${commentId}/replies/${replyId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: user.id
+                        })
+                    });
+
+                    if (response.ok) {
+                        showStatus('Reply deleted successfully');
+                        fetchUserPosts();
+                    } else {
+                        const errorData = await response.json();
+                        showStatus(`Failed to delete reply: ${errorData.error}`, true);
+                    }
+                } catch (error) {
+                    console.error('Error deleting reply:', error);
+                    showStatus('Failed to delete reply. Please try again.', true);
+                }
+            }
+        }
+
+        // Like/unlike post
+        async function likePost(postId) {
+            try {
+                const response = await fetch(`/api/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: user.id
+                    })
+                });
+
+                if (response.ok) {
+                    fetchUserPosts();
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`Failed to like post: ${errorData.error}`, true);
+                }
+            } catch (error) {
+                console.error('Error liking post:', error);
+                showStatus('Failed to like post. Please try again.', true);
+            }
+        }
+
+        // Logout functionality for desktop
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
+
+        // Logout functionality for mobile
+        document.getElementById('logoutBtnMobile').addEventListener('click', function () {
+            localStorage.removeItem('user'); // Fixed: was localStorage.removeUser('user')
+            window.location.href = '/login';
+        });
+
+        // Initialize page
+        fetchUserPosts();
+    </script>
+</body>
+
+</html>

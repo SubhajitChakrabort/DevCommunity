@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center px-4 py-8">
+        <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full">
+            <!-- Header with Logo and Title -->
+            <div class="text-center mb-6">
+                <img src="/dev.jpeg" alt="CIT Dev Community Logo" class="mx-auto mb-4 w-16 h-16 md:w-20 md:h-20 object-contain">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800 mb-2"> Dev Community</h1>
+                <h2 class="text-lg md:text-xl font-semibold text-gray-600">Create an Account</h2>
+            </div>
+            
+            <form id="registerForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" name="name" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="tel" name="phoneNumber" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Country</label>
+                    <input type="text" name="country" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Gender</label>
+                    <select name="gender" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <input type="date" name="dateOfBirth" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" required class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm md:text-base">
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 text-sm md:text-base font-medium">
+                    Register
+                </button>
+                <div class="text-center">
+                    <a href="/login" class="text-sm text-blue-500 hover:text-blue-700 transition duration-200">Already have an account? Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/api/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = '/login';
+                } else {
+                    alert('Registration failed: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error during registration: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

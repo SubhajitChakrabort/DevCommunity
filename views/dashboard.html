@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand Section -->
+                <div class="flex items-center space-x-3">
+                    <img src="/dev.jpeg" alt=" Dev Community Logo"
+                        class="h-8 w-8 md:h-10 md:w-10 object-contain">
+                    <div class="flex flex-col">
+                        <span class="text-sm md:text-lg font-bold text-gray-800"> Dev Community</span>
+                        <span id="welcomeUser" class="text-xs md:text-sm font-medium text-gray-600">Welcome</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/all-users"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        All Posts
+                    </a>
+                    <a href="/uploads"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Uploads
+                    </a>
+                    <a href="/profile"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        View Profile
+                    </a>
+                    <div class="relative">
+                        <a href="/profile" class="flex items-center">
+                            <img id="userProfilePic" class="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                                src="/images/default-avatar.png" alt="Profile">
+                        </a>
+                    </div>
+                    <button id="logoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                        onclick="localStorage.clear(); window.location.href='/login'">
+                        Logout
+                    </button>
+
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn"
+                        class="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/all-users"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    All Posts
+                </a>
+                <a href="/uploads"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Uploads
+                </a>
+                <a href="/profile"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    View Profile
+                </a>
+                <div class="flex items-center px-3 py-2 space-x-3">
+                    <img id="userProfilePicMobile" class="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                        src="/images/default-avatar.png" alt="Profile">
+                    <span class="text-gray-700 text-base font-medium">Profile</span>
+                </div>
+                <button id="logoutBtnMobile"
+                    class="block w-full text-left bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-4">Dashboard</h1>
+        <!-- Add your dashboard content here -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-gray-600">Welcome to your dashboard! Your content will appear here.</p>
+        </div>
+    </div>
+
+    <script>
+        // Get user data from localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('welcomeUser').textContent = `Welcome, ${user.name}`;
+            // Update profile picture if available
+            if (user.profilePicture) {
+                document.getElementById('userProfilePic').src = user.profilePicture;
+                document.getElementById('userProfilePicMobile').src = user.profilePicture;
+            }
+        } else {
+            window.location.href = '/login';
+        }
+
+        // Mobile menu toggle functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Logout functionality for desktop
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
+
+        // Logout functionality for mobile
+        document.getElementById('logoutBtnMobile').addEventListener('click', () => {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
+
+        // Close mobile menu when navigation links are clicked
+        const mobileNavLinks = mobileMenu.querySelectorAll('a');
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+
+</html>

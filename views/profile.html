@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/dev.jpeg">
+    <title>User Profile -  Dev Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand Section -->
+                <div class="flex items-center space-x-3">
+                    <img src="/dev.jpeg" alt=" Dev Community Logo"
+                        class="h-8 w-8 md:h-10 md:w-10 object-contain">
+                    <div class="flex flex-col">
+                        <span class="text-sm md:text-lg font-bold text-gray-800"> Dev Community</span>
+                        <span id="welcomeUser" class="text-xs md:text-sm font-medium text-gray-600">Welcome</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/all-users"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        All Posts
+                    </a>
+                    <a href="/uploads"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Uploads
+                    </a>
+                    <a href="/profile"
+                        class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        View Profile
+                    </a>
+                    <div class="relative">
+                        <a href="/profile" class="flex items-center">
+                            <img id="navProfilePic" class="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                                src="/images/default-avatar.png" alt="Profile">
+                        </a>
+                    </div>
+                    <button id="logoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                        onclick="localStorage.clear(); window.location.href='/login'">
+                        Logout
+                    </button>
+
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn"
+                        class="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600 p-2">
+                        <div class="w-6 h-6 flex flex-col justify-center items-center">
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                            <span class="block w-5 h-0.5 bg-current"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/all-users"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    All Posts
+                </a>
+                <a href="/uploads"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Uploads
+                </a>
+                <a href="/profile"
+                    class="block text-gray-700 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    View Profile
+                </a>
+                <div class="flex items-center px-3 py-2 space-x-3">
+                    <img id="navProfilePicMobile" class="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                        src="/images/default-avatar.png" alt="Profile">
+                    <span class="text-gray-700 text-base font-medium">Profile</span>
+                </div>
+                <button id="logoutBtnMobile"
+                    class="block w-full text-left bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Profile Picture Section -->
+                    <div class="md:w-1/3 flex flex-col items-center mb-6 md:mb-0">
+                        <div class="relative">
+                            <img id="profileImage" class="h-40 w-40 rounded-full object-cover border-4 border-gray-200"
+                                src="/images/default-avatar.png" alt="Profile Picture">
+                            <label for="profilePicInput"
+                                class="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </label>
+                            <input type="file" id="profilePicInput" accept="image/*" class="hidden">
+                        </div>
+                        <h2 id="profileName" class="text-xl font-semibold mt-4">User Name</h2>
+                        <p id="profileEmail" class="text-gray-600">user@example.com</p>
+                    </div>
+
+                    <!-- Profile Details Section -->
+                    <div class="md:w-2/3 md:pl-8">
+                        <h3 class="text-lg font-semibold mb-4">Profile Information</h3>
+                        <form id="profileForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Name</label>
+                                <input type="text" id="name" name="name"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 border">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email</label>
+                                <input type="email" id="email" name="email"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 border"
+                                    readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 border">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Country</label>
+                                <input type="text" id="country" name="country"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 border">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Gender</label>
+                                <select id="gender" name="gender"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 border">
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 border">
+                            </div>
+                            <div class="pt-4">
+                                <button type="submit"
+                                    class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get user data from localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = '/login';
+        }
+
+        // Update navbar profile picture and welcome message
+        document.getElementById('welcomeUser').textContent = `Welcome, ${user.name}`;
+        if (user.profilePicture) {
+            document.getElementById('navProfilePic').src = user.profilePicture;
+            document.getElementById('navProfilePicMobile').src = user.profilePicture;
+            document.getElementById('profileImage').src = user.profilePicture;
+        }
+
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile menu button clicked'); // Debug log
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+
+                // Close mobile menu when navigation links are clicked
+                const mobileNavLinks = mobileMenu.querySelectorAll('a');
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', function () {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+
+        // Fetch user details and populate form
+        async function fetchUserDetails() {
+            try {
+                const response = await fetch(`/api/users/${user.id}`);
+                if (response.ok) {
+                    const userData = await response.json();
+
+                    // Populate form fields
+                    document.getElementById('name').value = userData.name;
+                    document.getElementById('email').value = userData.email;
+                    document.getElementById('phoneNumber').value = userData.phoneNumber || '';
+                    document.getElementById('country').value = userData.country || '';
+                    document.getElementById('gender').value = userData.gender || '';
+
+                    // Format date for input field (YYYY-MM-DD)
+                    if (userData.dateOfBirth) {
+                        const date = new Date(userData.dateOfBirth);
+                        const formattedDate = date.toISOString().split('T')[0];
+                        document.getElementById('dateOfBirth').value = formattedDate;
+                    }
+
+                    // Update profile header
+                    document.getElementById('profileName').textContent = userData.name;
+                    document.getElementById('profileEmail').textContent = userData.email;
+                }
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+            }
+        }
+
+        // Handle profile picture upload
+        document.getElementById('profilePicInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+
+                try {
+                    const response = await fetch(`/api/users/${user.id}/profile-picture`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        // Update profile picture in UI
+                        document.getElementById('profileImage').src = result.profilePicture;
+                        document.getElementById('navProfilePic').src = result.profilePicture;
+                        document.getElementById('navProfilePicMobile').src = result.profilePicture;
+
+                        // Update user in localStorage
+                        const updatedUser = { ...user, profilePicture: result.profilePicture };
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+                    }
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    alert('Failed to upload profile picture');
+                }
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                country: document.getElementById('country').value,
+                gender: document.getElementById('gender').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value
+            };
+
+            try {
+                const response = await fetch(`/api/users/${user.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const updatedUser = await response.json();
+
+                    // Update user name in localStorage
+                    const storedUser = JSON.parse(localStorage.getItem('user'));
+                    storedUser.name = updatedUser.name;
+                    localStorage.setItem('user', JSON.stringify(storedUser));
+
+                    // Update UI
+                    document.getElementById('welcomeUser').textContent = `Welcome, ${updatedUser.name}`;
+                    document.getElementById('profileName').textContent = updatedUser.name;
+
+                    alert('Profile updated successfully');
+                } else {
+                    const errorData = await response.json();
+                    alert('Failed to update profile: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Failed to update profile');
+            }
+        });
+
+        // Logout functionality for desktop
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
+
+        // Logout functionality for mobile
+        document.getElementById('logoutBtnMobile').addEventListener('click', function () {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
+
+        // Initialize page
+        fetchUserDetails();
+    </script>
+</body>
+
+</html>
